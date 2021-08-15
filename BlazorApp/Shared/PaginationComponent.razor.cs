@@ -39,10 +39,10 @@ namespace BlazorApp.Shared
         [Parameter] public string ContainerCss { get; set; }
         [Parameter] public string ElementCss { get; set; }
         [Parameter] public string ActiceCss { get; set; }
+        [Parameter] public int Columns { get; set; } = 1;
         #endregion
 
         PagedList<T> PagedItems;
-        int Columns = 1;
 
         MarkupString DefaultHead;
         MarkupString DefaultBody;
@@ -52,7 +52,6 @@ namespace BlazorApp.Shared
         {
             DrawList(1);
         }
-
 
         void ToPage(int page)
         {
@@ -80,30 +79,31 @@ namespace BlazorApp.Shared
                 PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public |           //get public names
                                                                     BindingFlags.Instance);         //get instance names
 
-                Columns = properties.Length;
 
                 //get all my attributes
                 DisplayTableAttribute[] attributes = new DisplayTableAttribute[properties.Length];
 
                 StringBuilder html;
-                if (Head == null)
-                {
-                    html = new StringBuilder();
-                    for (int i = 0; i < Columns; i++)
-                    {
-                        attributes[i] = properties[i].GetCustomAttribute<DisplayTableAttribute>();                  //get if my custom attributes
-                                                                                                                    //custom header class
-                        string OpenTHTag = attributes[i] != null && attributes[i].HeaderClass != null ? $"<th class=\"{attributes[i].HeaderClass}\">" : "<th>";
-                        //custom header name
-                        Attribute alias = Attribute.GetCustomAttribute(properties[i], typeof(DisplayAttribute));     //get if have attribute display to change the name of the property                    
-                        string header = attributes[i] != null && attributes[i].Header != null ? attributes[i].Header :      //custom header name
-                                        alias == null ? properties[i].Name : ((DisplayAttribute)alias).GetName();         //if not get the display attribute or name
-                        html.Append($"{OpenTHTag}{header}</th>");
-                    }
-                    DefaultHead = new MarkupString(html.ToString());
-                }
                 if (Body == null)
                 {
+                    if (Head == null)
+                    {
+                        html = new StringBuilder();
+                        for (int i = 0; i < Columns; i++)
+                        {
+                            attributes[i] = properties[i].GetCustomAttribute<DisplayTableAttribute>();                  //get if my custom attributes
+                                                                                                                        //custom header class
+                            string OpenTHTag = attributes[i] != null && attributes[i].HeaderClass != null ? $"<th class=\"{attributes[i].HeaderClass}\">" : "<th>";
+                            //custom header name
+                            Attribute alias = Attribute.GetCustomAttribute(properties[i], typeof(DisplayAttribute));     //get if have attribute display to change the name of the property                    
+                            string header = attributes[i] != null && attributes[i].Header != null ? attributes[i].Header :      //custom header name
+                                            alias == null ? properties[i].Name : ((DisplayAttribute)alias).GetName();         //if not get the display attribute or name
+                            html.Append($"{OpenTHTag}{header}</th>");
+                        }
+                        DefaultHead = new MarkupString(html.ToString());
+                    }
+
+                    Columns = properties.Length;
                     html = new StringBuilder();
                     //get all the item to show the values
                     foreach (T item in PagedItems)
