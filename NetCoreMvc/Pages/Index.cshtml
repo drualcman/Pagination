@@ -1,0 +1,51 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    PagedList<SampleClass> SampleList;
+    if (!int.TryParse(this.Request.Query["page"], out int page))
+    {
+        page = 1;
+    }
+    SampleList = PagedList<SampleClass>.ToPagedList(SampleData.GetData(), page, 10);
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Pagination Sample</h2>
+        <table id="invoiceTable" class="table is-standard is-striped is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Created</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (SampleClass item in SampleList)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Created</td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Price</td>
+                        <td>@item.Qty</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="10">
+                        @Html.Raw(PagedList<SampleClass>.PagedListPager(SampleList))
+                    </td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+</div>

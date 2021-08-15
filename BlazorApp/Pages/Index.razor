@@ -1,0 +1,39 @@
+﻿@page "/"
+
+<h1>Pagination</h1>
+
+<PaginationComponent Items="SampleList" ContainerCss="row" ElementCss="btn btn-primary" ActiceCss="active">
+	<Body>
+		<td>@context.Id</td>
+		<td>@context.Created</td>
+		<td>@context.Name</td>
+		<td>@context.Description</td>
+		<td>@context.Price</td>
+		<td>
+			@context.Qty
+			<button type="button" class="btn btn-success" @onclick="() => Select_Click(context)">
+				Select
+			</button>
+		</td>
+	</body>
+</PaginationComponent>
+
+@code {
+	List<SampleClass> SampleList;
+
+	protected override void OnInitialized()
+	{
+		GetList();
+	}
+
+	void GetList()
+	{
+		SampleList = Pagination.SampleData.GetData();
+	}
+
+	void Select_Click(SampleClass item)
+	{
+		Console.WriteLine($"Selected: {item.Id} {item.Name}");
+	}
+}
+

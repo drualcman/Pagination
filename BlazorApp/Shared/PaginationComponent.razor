@@ -1,0 +1,95 @@
+﻿@typeparam T
+@if (Items is null)
+{
+	if (Loading is not null)
+	{
+		@Loading
+	}
+	else
+	{
+		<text>...</text>
+	}
+}
+else if (PagedItems.TotalCount > 0)
+{
+	<div class="@TableContainerCss">
+		<table @attributes="AdditionalAttributes">
+			<thead>
+				<tr>
+					@if (Head is not null)
+					{
+						@Head
+					}
+					else
+					{
+						@DefaultHead
+					}
+				</tr>
+			</thead>
+			<tbody>
+				@if (Body is not null)
+				{
+					foreach (T item in PagedItems)
+					{
+						<tr>
+							@this.Body(item)
+						</tr>
+					}
+				}
+				else
+				{
+					@DefaultBody
+				}
+			</tbody>
+			<tbody>
+				<tr>
+					<td colspan="@Columns">
+						<div class="@ContainerCss">
+							<ul>
+								@{
+									string active = 1 == PagedItems.CurrentPage ? ActiceCss : "";
+									int i;
+									if (PagedItems.CurrentPage > 5)
+									{
+										i = PagedItems.CurrentPage - 5;
+									}
+									else
+									{
+										i = 1;
+									}
+									if (PagedItems.CurrentPage > 5)
+									{
+										<li class="@ElementCss" @onclick="() => ToPage(1)">&lt;&lt;</li>
+										<li class="@ElementCss" @onclick="() => ToPage(PagedItems.CurrentPage - 1)">&lt;</li>
+									}
+									int c = 0;
+									do
+									{
+										int p = i;
+										if (i <= PagedItems.TotalPages)
+										{
+											active = i == PagedItems.CurrentPage ? ActiceCss : "";
+											<li class="@ElementCss @active" @onclick="() => ToPage(p)">@i</li>
+										}
+										else c = 10;
+										i++;
+										c++;
+									} while (c < 10 && i <= PagedItems.TotalPages);
+									if (PagedItems.CurrentPage < PagedItems.TotalPages - 5)
+									{
+										<li class="@ElementCss" @onclick="() => ToPage(PagedItems.CurrentPage+1)">&gt;</li>
+										<li class="@ElementCss" @onclick="() => ToPage(PagedItems.TotalPages)">&gt;&gt;</li>
+									}
+								}
+							</ul>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+	@Empty
+}
